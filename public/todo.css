@@ -2,3 +2,6 @@
   text-decoration: line-through;
   color: grey;
 }
+ul {
+  list-style-type: none;
+}

@@ -1,28 +1,40 @@
 angular.module('todoApp', [])
-  .controller('TodoListController', function() {
-    var todoList = this;
-    todoList.todos = [
-      {text:'learn AngularJS', done:true},
-      {text:'build an AngularJS app', done:false}];
+  .controller('TodoListController', [ '$scope', function($scope) {
+    $scope.todos = [
+      {text:'learn AngularJS', done:true, date: 1521544682274},
+      {text:'build an AngularJS app', done:false, date: 1521544282274}
+    ];
 
-    todoList.addTodo = function() {
-      todoList.todos.push({text:todoList.todoText, done:false});
-      todoList.todoText = '';
+    $scope.days = 0;
+
+    $scope.setDays = function (days) {
+      $scope.days = days;
     };
 
-    todoList.remaining = function() {
+    $scope.filterDays = function(day) {
+      console.log(day); //1521544282274
+      console.log($scope.days); //1 * 86 400 000
+      return day > Date.now() - $scope.days
+    };
+
+    $scope.addTodo = function() {
+      $scope.todos.push({text:$scope.todoText, done:false, date: Date.now()});
+      $scope.todoText = '';
+    };
+
+    $scope.remaining = function() {
       var count = 0;
-      angular.forEach(todoList.todos, function(todo) {
+      angular.forEach($scope.todos, function(todo) {
         count += todo.done ? 0 : 1;
       });
       return count;
     };
 
-    todoList.archive = function() {
-      var oldTodos = todoList.todos;
-      todoList.todos = [];
+    $scope.archive = function() {
+      var oldTodos = $scope.todos;
+      $scope.todos = [];
       angular.forEach(oldTodos, function(todo) {
-        if (!todo.done) todoList.todos.push(todo);
+        if (!todo.done) $scope.todos.push(todo);
       });
     };
-  });
+  }]);

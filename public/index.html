@@ -7,19 +7,39 @@
   </head>
   <body>
     <h2>Todo</h2>
-    <div ng-controller="TodoListController as todoList">
-      <span>{{todoList.remaining()}} of {{todoList.todos.length}} remaining</span>
-      [ <a href="" ng-click="todoList.archive()">archive</a> ]
+    <div ng-controller="TodoListController">
+      <span>{{remaining()}} of {{todos.length}} remaining</span>
+      [ <a href="" ng-click="archive()">archive</a> ]
+      <button ng-click="setDays(1)">1 day</button>&nbsp;
+      <button ng-click="setDays(3)">3 day</button>&nbsp;
+      <button ng-click="setDays(5)">5 day</button>&nbsp;
+      <button ng-click="setDays(0)">All</button>
       <ul class="unstyled">
-        <li ng-repeat="todo in todoList.todos">
-          <label class="checkbox">
+        <li class="list-title">
+          Complited tasks
+        </li>
+        <li ng-repeat="todo in todos | filter:filterDays:date">
+          <label class="checkbox" ng-if="todo.done">
             <input type="checkbox" ng-model="todo.done">
             <span class="done-{{todo.done}}">{{todo.text}}</span>
+            <span class="task-date">{{todo.date | date:'medium'}}</span>
           </label>
         </li>
       </ul>
-      <form ng-submit="todoList.addTodo()">
-        <input type="text" ng-model="todoList.todoText"  size="30"
+      <ul class="unstyled">
+          <li class="list-title">
+            Uncomplited tasks
+          </li>
+        <li ng-repeat="todo in todos" ng-if="!todo.done">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="todo.done">
+            <span class="done-{{todo.done}}">{{todo.text}}</span>
+            <span class="task-date">{{todo.date | date:'medium'}}</span>
+          </label>
+        </li>
+      </ul>
+      <form ng-submit="addTodo()">
+        <input type="text" ng-model="todoText"  size="30"
                placeholder="add new todo here">
         <input class="btn-primary" type="submit" value="add">
       </form>
