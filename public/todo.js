@@ -2,22 +2,31 @@ angular.module('todoApp', [])
   .controller('TodoListController', [ '$scope', function($scope) {
     $scope.todos = [
       {text:'learn AngularJS', done:true, date: 1521544682274},
+      {text:'learn JS core', done:true, date: 1511544682274},
       {text:'build an AngularJS app', done:false, date: 1521544282274}
     ];
 
-    $scope.days = 0;
+    $scope.days = 1e100;
 
     $scope.setDays = function (days) {
       $scope.days = days;
     };
 
+    $scope.orderTasks = function () {
+      $scope.sortTasksByName = !$scope.sortTasksByName ? 'text' : undefined;
+    };
+
+    $scope.sortByDate = function () {
+      $scope.sortTasksByDate = !$scope.sortTasksByDate;
+    };
+
     $scope.filterDays = function(day) {
-      console.log(day); //1521544282274
-      console.log($scope.days); //1 * 86 400 000
-      return day > Date.now() - $scope.days
+      return day.date > Date.now() - $scope.days * 86400000
     };
 
     $scope.addTodo = function() {
+      $scope.validationError = $scope.todoText.length > 20;
+      if ($scope.validationError) return;
       $scope.todos.push({text:$scope.todoText, done:false, date: Date.now()});
       $scope.todoText = '';
     };

@@ -10,15 +10,16 @@
     <div ng-controller="TodoListController">
       <span>{{remaining()}} of {{todos.length}} remaining</span>
       [ <a href="" ng-click="archive()">archive</a> ]
-      <button ng-click="setDays(1)">1 day</button>&nbsp;
-      <button ng-click="setDays(3)">3 day</button>&nbsp;
-      <button ng-click="setDays(5)">5 day</button>&nbsp;
-      <button ng-click="setDays(0)">All</button>
+      <button ng-class="{active:days === 1}" ng-click="setDays(1)">1 day</button>&nbsp;
+      <button ng-class="{active:days === 3}" ng-click="setDays(3)">3 day</button>&nbsp;
+      <button ng-class="{active:days === 5}" ng-click="setDays(5)">5 day</button>&nbsp;
+      <button ng-class="{active:days === 1e100}" ng-click="setDays(1e100)">All dates</button>&nbsp;
+      <button ng-class="{active:sortTasksByName}" ng-click="orderTasks()">Sort by name</button>
       <ul class="unstyled">
         <li class="list-title">
           Complited tasks
         </li>
-        <li ng-repeat="todo in todos | filter:filterDays:date">
+        <li ng-repeat="todo in todos | filter:filterDays | orderBy:sortTasksByName">
           <label class="checkbox" ng-if="todo.done">
             <input type="checkbox" ng-model="todo.done">
             <span class="done-{{todo.done}}">{{todo.text}}</span>
@@ -38,10 +39,11 @@
           </label>
         </li>
       </ul>
-      <form ng-submit="addTodo()">
-        <input type="text" ng-model="todoText"  size="30"
+      <form name="myForm" ng-submit="addTodo()">
+        <input type="text" ng-model="todoText" name="input" size="30"
                placeholder="add new todo here">
         <input class="btn-primary" type="submit" value="add">
+        <span class="error" ng-show="todoText.length > 20">Length should be less 20!</span><br>
       </form>
     </div>
   </body>
