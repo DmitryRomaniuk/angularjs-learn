@@ -1,13 +1,26 @@
-angular.module('todoApp', ['ui.router'])
-  .controller('TodoListController', [ '$scope', '$state', 'tasksService', function(
+angular.module('todoApp', ['ui.router', 'ngResource'])
+  .controller('TodoListController', [ '$scope', '$state', '$resource', '$stateParams', 'tasksService', function(
     $scope,
     $state,
+    $resource,
+    $stateParams,
     tasksService
   ) {
     $scope.todos = tasksService.tasks;
-
     $scope.days = 1e100;
-    $scope.editIndex = -1;
+    $scope.todoText = getTextTodo();
+
+    function getTextTodo() {
+      var todo = tasksService.tasks.filter(el => el.date.toString() === $stateParams.taskId)
+      return todo.length ? todo[0].text : ''
+    }
+    var Todos = $resource('/todo.json');
+
+    !tasksService.tasks.length && Todos.get({a:'a'})
+        .$promise.then(function(response) {
+          $scope.todos = tasksService.tasks = response.tasks;
+        })
+        .catch(err => console.log(err));
 
     $scope.setDays = function (days) {
       $scope.days = days;
@@ -18,10 +31,11 @@ angular.module('todoApp', ['ui.router'])
     };
 
     $scope.editTask = function (date) {
-      $scope.editIndex = $scope.todos.reduce(function(acc, elem, index) {
+      var editIndex = $scope.todos.reduce(function(acc, elem, index) {
         return (elem.date === date) ? index : acc;
-      });
-      $scope.todoText = $scope.todos[$scope.editIndex].text;
+      },0);
+      $state.go('edit', {taskId: $scope.todos[editIndex].date})
+      $scope.todoText = $scope.todos[editIndex].text;
     };
 
     $scope.orderTasks = function () {
@@ -39,11 +53,13 @@ angular.module('todoApp', ['ui.router'])
     $scope.addTodo = function() {
       $scope.validationError = $scope.todoText.length > 20;
       if ($scope.validationError) return;
-      if ($scope.editIndex > 0) {
-        $scope.todos[$scope.editIndex].text = $scope.todoText;
-        $scope.editIndex = -1;
+      var editIndex = tasksService.tasks.reduce(function(acc, elem, index) {
+        return (elem.date.toString() === $stateParams.taskId) ? index : acc;
+      },-1);
+      if (editIndex >= 0) {
+        tasksService.tasks[editIndex].text = $scope.todoText;
       } else {
-        $scope.todos.push({text:$scope.todoText, done:false, date: Date.now()});
+        tasksService.tasks.push({text:$scope.todoText, done:false, date: Date.now()});
       }
       $scope.todoText = '';
       $state.go('main');
@@ -65,12 +81,8 @@ angular.module('todoApp', ['ui.router'])
       });
     };
   }])
-  .service('tasksService', [function() {
-     var tasks = [
-      {text:'learn AngularJS', done:true, date: 1521544682274},
-      {text:'learn JS core', done:true, date: 1511544682274},
-      {text:'build an AngularJS app', done:false, date: 1521544282274}
-    ];
+  .service('tasksService', ['$http', function($http) {
+     var tasks = [];
      return {
        tasks: tasks
      };
@@ -132,19 +144,19 @@ angular.module('todoApp', ['ui.router'])
       url: '/',
       template: '<main></main>'
     }
-  
+
     var addState = {
       name: 'add',
       url: '/task/add',
       template: '<add></add>'
     }
-  
+
     var editState = {
       name: 'edit',
       url: '/task/{taskId}/edit',
       template: '<add></add>'
     }
-  
+
     $stateProvider.state(mainState);
     $stateProvider.state(addState);
     $stateProvider.state(editState);

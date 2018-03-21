@@ -6,6 +6,21 @@ var router = require('express').Router()
 var app = express()
 
 app.use(serveStatic(path.join(__dirname, 'node_modules')))
+router.get('/todo.json', function(req, res) {
+  console.log(req.url);
+  var options = {
+    root: __dirname + '/public/',
+    dotfiles: 'deny',
+    headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true
+    }
+  };
+
+  res.sendFile('/todo.json', options, function (err) {
+    if (err) next(err);
+  });
+})
 router.all('*', function(req, res, next) {
     // Just send the index.html for other files to support HTML5Mode
     var match = req.url.match(/(\.js)|(\.css)|(\.woff)|(\.svg)|(\.png)|(\.map)|(\.ttf)|(\.\w+\?_etag)/i);
@@ -18,7 +33,7 @@ router.all('*', function(req, res, next) {
             'x-sent': true
         }
       };
-    
+
     res.sendFile(file, options, function (err) {
       if (err) next(err);
     });
