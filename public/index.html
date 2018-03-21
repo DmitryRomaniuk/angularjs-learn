@@ -1,50 +1,15 @@
 <!doctype html>
 <html ng-app="todoApp">
   <head>
+    <base href="/">
     <script src="/angular/angular.js"></script>
+    <script src="/@uirouter/angularjs/release/angular-ui-router.js"></script>
     <script src="todo.js"></script>
     <link rel="stylesheet" href="todo.css">
   </head>
   <body>
-    <h2>Todo</h2>
-    <div ng-controller="TodoListController">
-      <span>{{remaining()}} of {{todos.length}} remaining</span>
-      [ <a href="" ng-click="archive()">archive</a> ]
-      <button ng-class="{active:days === 1}" ng-click="setDays(1)">1 day</button>&nbsp;
-      <button ng-class="{active:days === 3}" ng-click="setDays(3)">3 day</button>&nbsp;
-      <button ng-class="{active:days === 5}" ng-click="setDays(5)">5 day</button>&nbsp;
-      <button ng-class="{active:days === 1e100}" ng-click="setDays(1e100)">All dates</button>&nbsp;
-      <button ng-class="{active:sortTasksByName}" ng-click="orderTasks()">Sort by name</button>
-      <ul class="unstyled">
-        <li class="list-title">
-          Complited tasks
-        </li>
-        <li ng-repeat="todo in todos | filter:filterDays | orderBy:sortTasksByName">
-          <label class="checkbox" ng-if="todo.done">
-            <input type="checkbox" ng-model="todo.done">
-            <span class="done-{{todo.done}}">{{todo.text}}</span>
-            <span class="task-date">{{todo.date | date:'medium'}}</span>
-          </label>
-        </li>
-      </ul>
-      <ul class="unstyled">
-          <li class="list-title">
-            Uncomplited tasks
-          </li>
-        <li ng-repeat="todo in todos" ng-if="!todo.done">
-          <label class="checkbox">
-            <input type="checkbox" ng-model="todo.done">
-            <span class="done-{{todo.done}}">{{todo.text}}</span>
-            <span class="task-date">{{todo.date | date:'medium'}}</span>
-          </label>
-        </li>
-      </ul>
-      <form name="myForm" ng-submit="addTodo()">
-        <input type="text" ng-model="todoText" name="input" size="30"
-               placeholder="add new todo here">
-        <input class="btn-primary" type="submit" value="add">
-        <span class="error" ng-show="todoText.length > 20">Length should be less 20!</span><br>
-      </form>
-    </div>
+    <a ui-sref="main">main</a>
+    <ui-view></ui-view>
+  </div>
   </body>
 </html>
